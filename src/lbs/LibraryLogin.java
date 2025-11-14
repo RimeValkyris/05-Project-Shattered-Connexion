@@ -3,7 +3,14 @@ package lbs;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Image;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -105,6 +112,59 @@ public class LibraryLogin extends JFrame {
 		btnNewButton.setFocusPainted(false);
 		contentPane.add(btnNewButton);
 		
+		JLabel lblNewLabel_2 = new JLabel("");
+		// Improved image loading: try classpath and file-system fallbacks, and provide diagnostic tooltip if not found.
+		String[] candidates = new String[] {
+			"/SchoolLibraryLogIn.png",
+			"SchoolLibraryLogIn.png",
+			"/SchoolLibraryLogIn.jpg",
+			"SchoolLibraryLoginIn.jpg",
+			"/Images/SchoolLibraryLoginIn.jpg",
+			"/uno.jpg",
+			"uno.jpg"
+		};
+		ImageIcon icon = tryLoadIcon(candidates);
+		// Prefer the known repository Images path if the previous attempts failed
+		if (icon == null) {
+			// check using JVM working directory; this helps when running from IDE where working dir = project root
+			String proj = System.getProperty("user.dir");
+			File known = new File(proj + File.separator + "Images" + File.separator + "SchoolLibraryLoginIn.jpg");
+			if (known.exists()) icon = new ImageIcon(known.getAbsolutePath());
+			// also try the absolute path where the repo contains the file (helpful in local dev)
+			File alt = new File("c:" + File.separator + "Users" + File.separator + "ENVY" + File.separator + "git" + File.separator + "05-Project-Shattered-Connexion" + File.separator + "Images" + File.separator + "SchoolLibraryLoginIn.jpg");
+			if (alt.exists()) icon = new ImageIcon(alt.getAbsolutePath());
+		}
+		// Final fallback: create a simple drawn placeholder image so UI always shows an icon
+		if (icon != null) {
+			Image img = icon.getImage();
+			// scale the image to fit the label bounds (355x448) preserving aspect ratio and using high-quality scaling
+			Image scaled = getScaledImage(img, 355, 448);
+			lblNewLabel_2.setIcon(new ImageIcon(scaled));
+		} else {
+			BufferedImage placeholder = new BufferedImage(355, 448, BufferedImage.TYPE_INT_ARGB);
+			Graphics2D g = placeholder.createGraphics();
+			try {
+				g.setColor(new Color(240, 240, 240));
+				g.fillRect(0, 0, 355, 448);
+				g.setColor(Color.GRAY);
+				g.drawRect(10, 10, 335, 428);
+				g.setFont(new Font("SansSerif", Font.PLAIN, 18));
+				String s = "Image not found";
+				int sw = g.getFontMetrics().stringWidth(s);
+				g.drawString(s, (355 - sw) / 2, 220);
+			} finally {
+				g.dispose();
+			}
+			lblNewLabel_2.setIcon(new ImageIcon(placeholder));
+			String proj = System.getProperty("user.dir");
+			String tooltip = "Could not find image. Tried classpath and files:\n" +
+				" - " + proj + File.separator + "Images" + File.separator + "SchoolLibraryLoginIn.jpg" +
+				"\n - c:\\Users\\ENVY\\git\\05-Project-Shattered-Connexion\\Images\\SchoolLibraryLoginIn.jpg";
+			lblNewLabel_2.setToolTipText(tooltip);
+		}
+		lblNewLabel_2.setBounds(0, 0, 355, 448);
+		contentPane.add(lblNewLabel_2);
+		
 		
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -120,4 +180,79 @@ public class LibraryLogin extends JFrame {
 		});
 
 	}
+
+	/**
+	 * Try loading an ImageIcon from multiple candidate locations. This checks:
+	 * - classpath resources via getResource
+	 * - classpath streams via getResourceAsStream (ImageIO)
+	 * - filesystem paths (as given)
+	 * - common project-relative locations like "src/Images/..." and "Images/..."
+	 */
+	private ImageIcon tryLoadIcon(String... candidates) {
+		for (String p : candidates) {
+			if (p == null) continue;
+			// 1) try classpath resource url
+			java.net.URL url = getClass().getResource(p);
+			if (url == null && !p.startsWith("/")) url = getClass().getResource("/" + p);
+			if (url != null) {
+				return new ImageIcon(url);
+			}
+			// 2) try resource as stream (useful if resource is inside a jar)
+			InputStream is = getClass().getResourceAsStream(p);
+			if (is == null && !p.startsWith("/")) is = getClass().getResourceAsStream("/" + p);
+			if (is != null) {
+				try {
+					Image img = ImageIO.read(is);
+					if (img != null) return new ImageIcon(img);
+				} catch (IOException e) {
+					// ignore and continue trying other paths
+				}
+			}
+			// 3) try filesystem paths
+			File f = new File(p);
+			if (f.exists()) {
+				return new ImageIcon(f.getAbsolutePath());
+			}
+			// 4) try common project-relative locations
+			f = new File("src" + File.separator + p);
+			if (f.exists()) return new ImageIcon(f.getAbsolutePath());
+			f = new File("Images" + File.separator + p);
+			if (f.exists()) return new ImageIcon(f.getAbsolutePath());
+			f = new File("src" + File.separator + "Images" + File.separator + p);
+			if (f.exists()) return new ImageIcon(f.getAbsolutePath());
+		}
+		return null;
+	}
+
+	/**
+	 * Scale the provided Image to fill (cover) the target maxW x maxH preserving aspect ratio.
+	 * The returned Image is exactly maxW x maxH; the source is scaled (up or down) and
+	 * centered so the target area is fully covered, cropping overflow.
+	 */
+	private Image getScaledImage(Image src, int maxW, int maxH) {
+		if (src == null) return null;
+		int w = src.getWidth(null);
+		int h = src.getHeight(null);
+		if (w <= 0 || h <= 0) return src;
+		// COVER behavior: scale so the image fills the target area (may crop)
+		double scale = Math.max((double) maxW / w, (double) maxH / h);
+		int nw = Math.max(1, (int) Math.round(w * scale));
+		int nh = Math.max(1, (int) Math.round(h * scale));
+		BufferedImage canvas = new BufferedImage(maxW, maxH, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2 = canvas.createGraphics();
+		try {
+			// high-quality rendering hints
+			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+			g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			// draw the scaled image centered; negative x/y will crop edges automatically
+			int x = (maxW - nw) / 2;
+			int y = (maxH - nh) / 2;
+			g2.drawImage(src, x, y, nw, nh, null);
+		} finally {
+			g2.dispose();
+		}
+		return canvas;
+	}
+
 }
