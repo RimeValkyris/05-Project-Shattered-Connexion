@@ -17,6 +17,8 @@ import java.awt.image.BufferedImage;
 import java.awt.RenderingHints;
 import java.awt.BasicStroke; // added for optional border
 import java.awt.geom.RoundRectangle2D; // added for rounded corners
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class LibraryDashboard extends JFrame {
 
@@ -148,15 +150,37 @@ public class LibraryDashboard extends JFrame {
 			public void mouseExited(java.awt.event.MouseEvent evt) { btnExit.setBackground(btnBg); }
 		});
 		
+		// Action listener for Manage Books button
+		btnManage.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+				new ManageBooks().setVisible(true);
+			}
+		});
+		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBounds(0, 0, 1271, 49);
 		panel_1.setBackground(new Color(79, 70, 229));
 		contentPane.add(panel_1);
+		panel_1.setLayout(null);
+		
+		JLabel lblNewLabel_5 = new JLabel("Library Management System");
+		lblNewLabel_5.setForeground(new Color(255, 255, 255));
+		lblNewLabel_5.setFont(new Font("Oswald", Font.BOLD, 25));
+		lblNewLabel_5.setBounds(10, 11, 402, 27);
+		panel_1.add(lblNewLabel_5);
 		
 		JPanel panel_1_1 = new JPanel();
 		panel_1_1.setBounds(0, 668, 1271, 49);
 		panel_1_1.setBackground(new Color(79, 70, 229));
 		contentPane.add(panel_1_1);
+		panel_1_1.setLayout(null);
+		
+		JLabel lblNewLabel_5_1 = new JLabel("University of Ruina");
+		lblNewLabel_5_1.setBounds(1100, 11, 161, 27);
+		lblNewLabel_5_1.setForeground(Color.WHITE);
+		lblNewLabel_5_1.setFont(new Font("Oswald", Font.BOLD, 21));
+		panel_1_1.add(lblNewLabel_5_1);
 		
 		JLabel lblNewLabel = new JLabel();
 		// banner size: keep in sync with setBounds below
@@ -234,6 +258,12 @@ public class LibraryDashboard extends JFrame {
 		panel_2_1_1.setBounds(941, 296, 226, 95);
 		contentPane.add(panel_2_1_1);
 		panel_2_1_1.setLayout(null);
+		
+		JLabel lblNewLabel_4 = new JLabel("Members");
+		lblNewLabel_4.setForeground(new Color(255, 255, 255));
+		lblNewLabel_4.setFont(new Font("Segoe UI Symbol", Font.BOLD, 16));
+		lblNewLabel_4.setBounds(80, 11, 70, 14);
+		panel_2_1_1.add(lblNewLabel_4);
 		
 		JPanel panel_2_1_1_1 = new JPanel();
 		panel_2_1_1_1.setBackground(new Color(255, 153, 51));

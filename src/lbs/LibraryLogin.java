@@ -35,7 +35,7 @@ public class LibraryLogin extends JFrame {
 	private JLabel lblNewLabel_1;
 
 	/**
-	 * Launch the application.
+	 * Launches the application.
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
