@@ -9,6 +9,14 @@ import java.awt.Color;
 import javax.swing.JButton;
 import java.awt.Font;
 import java.awt.Cursor;
+import javax.swing.JLabel;
+import java.awt.Image;
+import javax.swing.ImageIcon;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.awt.RenderingHints;
+import java.awt.BasicStroke; // added for optional border
+import java.awt.geom.RoundRectangle2D; // added for rounded corners
 
 public class LibraryDashboard extends JFrame {
 
@@ -25,7 +33,7 @@ public class LibraryDashboard extends JFrame {
 	 */
 	public LibraryDashboard() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1287, 592);
+		setBounds(100, 100, 1287, 756);
 		contentPane = new JPanel();
 		setResizable(false);
 		contentPane.setBackground(Color.WHITE);
@@ -34,7 +42,7 @@ public class LibraryDashboard extends JFrame {
 		contentPane.setLayout(null);
 		
 		JPanel panel = new JPanel();
-		panel.setBounds(0, 48, 246, 456);
+		panel.setBounds(0, 48, 246, 621);
 		panel.setBackground(new Color(30, 41, 59));
 		contentPane.add(panel);
 		panel.setLayout(null);
@@ -48,7 +56,7 @@ public class LibraryDashboard extends JFrame {
 		int btnX = (246 - btnWidth) / 2; // center horizontally inside panel
 		
 		JButton btnManage = new JButton("Manage Books");
-		btnManage.setBounds(btnX, 40, btnWidth, 40);
+		btnManage.setBounds(32, 119, btnWidth, 40);
 		btnManage.setFont(btnFont);
 		btnManage.setBackground(btnBg);
 		btnManage.setForeground(btnFg);
@@ -59,7 +67,7 @@ public class LibraryDashboard extends JFrame {
 		panel.add(btnManage);
 		
 		JButton btnIssue = new JButton("Issue Books");
-		btnIssue.setBounds(btnX, 100, btnWidth, 40);
+		btnIssue.setBounds(32, 179, btnWidth, 40);
 		btnIssue.setFont(btnFont);
 		btnIssue.setBackground(btnBg);
 		btnIssue.setForeground(btnFg);
@@ -70,7 +78,7 @@ public class LibraryDashboard extends JFrame {
 		panel.add(btnIssue);
 		
 		JButton btnReturn = new JButton("Return Books");
-		btnReturn.setBounds(btnX, 160, btnWidth, 40);
+		btnReturn.setBounds(32, 239, btnWidth, 40);
 		btnReturn.setFont(btnFont);
 		btnReturn.setBackground(btnBg);
 		btnReturn.setForeground(btnFg);
@@ -81,7 +89,7 @@ public class LibraryDashboard extends JFrame {
 		panel.add(btnReturn);
 		
 		JButton btnMember = new JButton("Member Management");
-		btnMember.setBounds(btnX, 220, btnWidth, 40);
+		btnMember.setBounds(32, 299, btnWidth, 40);
 		btnMember.setFont(btnFont);
 		btnMember.setBackground(btnBg);
 		btnMember.setForeground(btnFg);
@@ -92,7 +100,7 @@ public class LibraryDashboard extends JFrame {
 		panel.add(btnMember);
 		
 		JButton btnLogout = new JButton("Logout");
-		btnLogout.setBounds(btnX, 280, btnWidth, 40);
+		btnLogout.setBounds(32, 359, btnWidth, 40);
 		btnLogout.setFont(btnFont);
 		btnLogout.setBackground(btnBg);
 		btnLogout.setForeground(btnFg);
@@ -103,7 +111,7 @@ public class LibraryDashboard extends JFrame {
 		panel.add(btnLogout);
 		
 		JButton btnExit = new JButton("Exit");
-		btnExit.setBounds(btnX, 340, btnWidth, 40);
+		btnExit.setBounds(32, 419, btnWidth, 40);
 		btnExit.setFont(btnFont);
 		btnExit.setBackground(btnBg);
 		btnExit.setForeground(btnFg);
@@ -146,11 +154,112 @@ public class LibraryDashboard extends JFrame {
 		contentPane.add(panel_1);
 		
 		JPanel panel_1_1 = new JPanel();
-		panel_1_1.setBounds(0, 504, 1271, 49);
+		panel_1_1.setBounds(0, 668, 1271, 49);
 		panel_1_1.setBackground(new Color(79, 70, 229));
 		contentPane.add(panel_1_1);
+		
+		JLabel lblNewLabel = new JLabel();
+		// banner size: keep in sync with setBounds below
+		int bannerW = 1025;
+		int bannerH = 188;
+		lblNewLabel.setBounds(246, 48, bannerW, bannerH);
+		// attempt to load the image from classpath first, fallback to Images/ folder on disk
+		String imgResourcePath = "/Images/SchoolLibraryLoginIn.jpg";
+		ImageIcon icon = null;
+		java.net.URL imgUrl = getClass().getResource(imgResourcePath);
+		if (imgUrl != null) {
+			icon = new ImageIcon(imgUrl);
+		} else {
+			java.io.File f = new java.io.File("Images/SchoolLibraryLoginIn.jpg");
+			if (f.exists()) {
+				icon = new ImageIcon(f.getAbsolutePath());
+			}
+		}
+		if (icon != null) {
+			// COVER mode: scale to fill the banner area and crop overflow (no stretching)
+			Image srcImg = icon.getImage();
+			int srcW = srcImg.getWidth(null);
+			int srcH = srcImg.getHeight(null);
+			if (srcW > 0 && srcH > 0) {
+				double scale = Math.max((double) bannerW / srcW, (double) bannerH / srcH);
+				int destW = Math.max(1, (int) Math.round(srcW * scale));
+				int destH = Math.max(1, (int) Math.round(srcH * scale));
+				int x = (bannerW - destW) / 2;
+				int y = (bannerH - destH) / 2;
+				BufferedImage canvas = new BufferedImage(bannerW, bannerH, BufferedImage.TYPE_INT_ARGB);
+				Graphics2D g2 = canvas.createGraphics();
+				try {
+					// high quality rendering hints
+					g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+					g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+					g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+					// rounded clip and background
+					float arc = 24f; // corner radius
+					RoundRectangle2D.Float round = new RoundRectangle2D.Float(0, 0, bannerW, bannerH, arc, arc);
+					// fill rounded background
+					g2.setColor(Color.WHITE);
+					g2.fill(round);
+					// set clip to rounded area so image is drawn with smooth rounded corners
+					java.awt.Shape oldClip = g2.getClip();
+					g2.setClip(round);
+					// draw scaled image (may be larger than canvas so it crops automatically)
+					g2.drawImage(srcImg, x, y, destW, destH, null);
+					// restore clip
+					g2.setClip(oldClip);
+					// optional subtle border around rounded image
+					g2.setStroke(new BasicStroke(1.5f));
+					g2.setColor(new Color(200, 200, 200, 180));
+					g2.draw(round);
+				} finally {
+					g2.dispose();
+				}
+				lblNewLabel.setIcon(new ImageIcon(canvas));
+			} else {
+				// fallback: use original icon if we couldn't measure it
+				lblNewLabel.setIcon(icon);
+			}
+		} else {
+			lblNewLabel.setText("Banner image not found");
+			lblNewLabel.setHorizontalAlignment(JLabel.CENTER);
+		}
+		contentPane.add(lblNewLabel);
+		
+		JLabel lblNewLabel_1 = new JLabel("LIBRARY DASHBOARD");
+		lblNewLabel_1.setFont(new Font("SansSerif", Font.BOLD, 24));
+		lblNewLabel_1.setBounds(608, 225, 275, 59);
+		contentPane.add(lblNewLabel_1);
+		
+		JPanel panel_2_1_1 = new JPanel();
+		panel_2_1_1.setBackground(new Color(0, 204, 102));
+		panel_2_1_1.setBounds(941, 296, 226, 95);
+		contentPane.add(panel_2_1_1);
+		panel_2_1_1.setLayout(null);
+		
+		JPanel panel_2_1_1_1 = new JPanel();
+		panel_2_1_1_1.setBackground(new Color(255, 153, 51));
+		panel_2_1_1_1.setBounds(618, 295, 226, 95);
+		contentPane.add(panel_2_1_1_1);
+		panel_2_1_1_1.setLayout(null);
+		
+		JLabel lblNewLabel_3 = new JLabel("Issued Books");
+		lblNewLabel_3.setForeground(new Color(255, 255, 255));
+		lblNewLabel_3.setFont(new Font("Segoe UI Symbol", Font.BOLD, 16));
+		lblNewLabel_3.setBounds(69, 11, 96, 22);
+		panel_2_1_1_1.add(lblNewLabel_3);
+		
+		JPanel panel_2_1_1_1_1 = new JPanel();
+		panel_2_1_1_1_1.setBackground(new Color(51, 153, 255));
+		panel_2_1_1_1_1.setBounds(315, 296, 226, 95);
+		contentPane.add(panel_2_1_1_1_1);
+		panel_2_1_1_1_1.setLayout(null);
+		
+		JLabel lblNewLabel_2 = new JLabel("Total Books");
+		lblNewLabel_2.setForeground(new Color(255, 255, 255));
+		lblNewLabel_2.setFont(new Font("Segoe UI Symbol", Font.BOLD, 16));
+		lblNewLabel_2.setBounds(68, 11, 89, 22);
+		panel_2_1_1_1_1.add(lblNewLabel_2);
+		contentPane.revalidate();
+		contentPane.repaint();
 
 	}
-
-	
 }
