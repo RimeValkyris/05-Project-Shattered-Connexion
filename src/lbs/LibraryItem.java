@@ -3,7 +3,7 @@ package lbs;
 /**
  * Base class for library items
  */
-public class LibraryItem {
+public abstract class LibraryItem {
     protected String title;
     protected String itemId;
     protected boolean isAvailable;
@@ -58,12 +58,11 @@ public class LibraryItem {
         isAvailable = true;
     }
 
+    /**
+     * Abstract method to get details of the item
+     */
+    public abstract String getDetails();
+
     @Override
-    public String toString() {
-        return "LibraryItem{" +
-                "title='" + title + '\'' +
-                ", itemId='" + itemId + '\'' +
-                ", isAvailable=" + isAvailable +
-                '}';
-    }
+    public abstract String toString();
 }
