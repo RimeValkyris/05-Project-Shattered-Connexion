@@ -47,9 +47,10 @@ public class LibraryDashboard extends JFrame {
 	 */
 	public LibraryDashboard() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1287, 756);
-		contentPane = new JPanel();
+		setSize(1287, 756);
+		setLocationRelativeTo(null);
 		setResizable(false);
+		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -170,6 +171,22 @@ public class LibraryDashboard extends JFrame {
 			}
 		});
 		
+		// Action listener for Issue Books button
+		btnIssue.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+				new BorrowTransaction().setVisible(true);
+			}
+		});
+		
+		// Action listener for Return Books button
+		btnReturn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+				new ReturnTransaction().setVisible(true);
+			}
+		});
+		
 		// Action listener for Member Management button
 		btnMember.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -221,7 +238,7 @@ public class LibraryDashboard extends JFrame {
 		// banner size: keep in sync with setBounds below
 		int bannerW = 1025;
 		int bannerH = 188;
-		lblNewLabel.setBounds(246, 48, bannerW, bannerH);
+		lblNewLabel.setBounds(245, 48, 1058, 188);
 		// attempt to load the image from classpath first, fallback to Images/ folder on disk
 		String imgResourcePath = "/Images/SchoolLibraryLoginIn.jpg";
 		ImageIcon icon = null;
@@ -303,7 +320,7 @@ public class LibraryDashboard extends JFrame {
 		lblMembersCount = new JLabel("0");
 		lblMembersCount.setForeground(Color.WHITE);
 		lblMembersCount.setFont(new Font("Segoe UI Symbol", Font.BOLD, 24));
-		lblMembersCount.setBounds(98, 33, 77, 30);
+		lblMembersCount.setBounds(103, 36, 77, 30);
 		panel_2_1_1.add(lblMembersCount);
 		
 		JPanel panel_2_1_1_1 = new JPanel();
@@ -321,7 +338,7 @@ public class LibraryDashboard extends JFrame {
 		lblIssuedBooksCount = new JLabel("0");
 		lblIssuedBooksCount.setForeground(Color.WHITE);
 		lblIssuedBooksCount.setFont(new Font("Segoe UI Symbol", Font.BOLD, 24));
-		lblIssuedBooksCount.setBounds(98, 33, 77, 30);
+		lblIssuedBooksCount.setBounds(106, 34, 48, 30);
 		panel_2_1_1_1.add(lblIssuedBooksCount);
 		
 		JPanel panel_2_1_1_1_1 = new JPanel();
@@ -333,13 +350,13 @@ public class LibraryDashboard extends JFrame {
 		JLabel lblNewLabel_2 = new JLabel("Total Books");
 		lblNewLabel_2.setForeground(new Color(255, 255, 255));
 		lblNewLabel_2.setFont(new Font("Segoe UI Symbol", Font.BOLD, 16));
-		lblNewLabel_2.setBounds(68, 11, 89, 22);
+		lblNewLabel_2.setBounds(70, 11, 89, 22);
 		panel_2_1_1_1_1.add(lblNewLabel_2);
 		
 		lblTotalBooksCount = new JLabel("0");
 		lblTotalBooksCount.setForeground(Color.WHITE);
 		lblTotalBooksCount.setFont(new Font("Segoe UI Symbol", Font.BOLD, 24));
-		lblTotalBooksCount.setBounds(98, 33, 77, 30);
+		lblTotalBooksCount.setBounds(102, 34, 49, 30);
 		panel_2_1_1_1_1.add(lblTotalBooksCount);
 		
 		updateStatistics();
@@ -349,10 +366,10 @@ public class LibraryDashboard extends JFrame {
 	}
 	
 	public void updateStatistics() {
-		totalBooks = ManageBooks.bookList.size();
+		totalBooks = BookManager.instance.getBookCount();
 		// Assuming issued books count is not yet tracked, defaulting to 0
-		issuedBooks = 0; 
-		members = MemberManagement.getMemberCount();
+		issuedBooks = BookManager.instance.getIssuedBookCount(); 
+		members = MemberManager.instance.getMemberCount();
 
 		lblTotalBooksCount.setText(String.valueOf(getTotalBooks()));
 		lblIssuedBooksCount.setText(String.valueOf(getIssuedBooks()));

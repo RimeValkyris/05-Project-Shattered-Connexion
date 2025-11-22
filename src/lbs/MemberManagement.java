@@ -52,7 +52,8 @@ public class MemberManagement extends JFrame {
 	 */
 	public MemberManagement() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1566, 756);
+		setSize(1566, 756);
+		setLocationRelativeTo(null);
 		setResizable(false);
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);

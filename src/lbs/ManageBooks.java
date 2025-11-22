@@ -1,6 +1,5 @@
 package lbs;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -31,18 +30,7 @@ public class ManageBooks extends JFrame {
 	private JTextField textField_6;
 	private JTable table;
 	
-	// List to store book objects
-	public static List<Book> bookList = new ArrayList<>();
-	
-	static {
-		// Add initial books
-		bookList.add(new Book("978-0156012195", "The Little Prince", 
-			"Antoine de Saint-Exupéry", "Children's Literature", "Reynal & Hitchcock", 1943));
-		bookList.add(new Book("978-0141439760", "Alice's Adventures in Wonderland", 
-			"Lewis Carroll", "Fantasy", "Macmillan", 1865));
-		bookList.add(new Book("978-0451524935", "1984", 
-			"George Orwell", "Dystopian Fiction", "Secker & Warburg", 1949));
-	}
+	private BookManager bookManager = BookManager.instance;
 	
 	// Update mode variables
 	private boolean isUpdateMode = false;
@@ -58,7 +46,8 @@ public class ManageBooks extends JFrame {
 	 */
 	public ManageBooks() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 1287, 756);
+		setSize(1287, 756);
+		setLocationRelativeTo(null);
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -250,7 +239,7 @@ public class ManageBooks extends JFrame {
 				
 				// Create new book object
 				Book newBook = new Book(isbn, title, author, genre, publisher, Integer.parseInt(year));
-				bookList.add(newBook);
+				bookManager.addBook(newBook);
 				
 				// Add new row to table with status
 				String status = newBook.isAvailable() ? "Available" : "Checked Out";
@@ -298,7 +287,7 @@ public class ManageBooks extends JFrame {
 				
 				if (confirm == javax.swing.JOptionPane.YES_OPTION) {
 					// Remove from list and table
-					bookList.remove(selectedRow);
+					bookManager.removeBook(selectedRow);
 					DefaultTableModel model = (DefaultTableModel) table.getModel();
 					model.removeRow(selectedRow);
 					
@@ -332,7 +321,7 @@ public class ManageBooks extends JFrame {
 					}
 					
 					// Get the book from the list
-					Book selectedBook = bookList.get(selectedRow);
+					Book selectedBook = bookManager.getBook(selectedRow);
 					
 					// Populate text fields with book data
 					textField.setText(selectedBook.getIsbn());
@@ -383,7 +372,7 @@ public class ManageBooks extends JFrame {
 					Book updatedBook = new Book(isbn, title, author, genre, publisher, Integer.parseInt(year));
 					
 					// Update the book in the list and table
-					bookList.set(updateIndex, updatedBook);
+					bookManager.updateBook(updateIndex, updatedBook);
 					refreshTable();
 					
 					// Clear fields and reset mode
@@ -480,7 +469,7 @@ public class ManageBooks extends JFrame {
 		JButton btnSearch = new JButton("Search");
 		btnSearch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String searchText = textField_6.getText().trim().toLowerCase();
+				String searchText = textField_6.getText().trim();
 				
 				if (searchText.isEmpty()) {
 					// If search is empty, show all books
@@ -493,36 +482,18 @@ public class ManageBooks extends JFrame {
 				model.setRowCount(0);
 				
 				// Filter and add matching books
-				for (Book book : bookList) {
-					String title = book.getTitle().toLowerCase();
-					String author = book.getAuthor().toLowerCase();
-					String isbn = book.getIsbn().toLowerCase();
-					String genre = book.getGenre().toLowerCase();
-					String publisher = book.getPublisher().toLowerCase();
-					String yearStr = String.valueOf(book.getYear());
-					String status = book.isAvailable() ? "Available" : "Checked Out";
-					status = status.toLowerCase();
-					
-					// Check if search text matches any field
-					if (title.contains(searchText) || 
-						author.contains(searchText) || 
-						isbn.contains(searchText) ||
-						genre.contains(searchText) ||
-						publisher.contains(searchText) ||
-						yearStr.contains(searchText) ||
-						status.contains(searchText)) {
-						
-						String displayStatus = book.isAvailable() ? "Available" : "Checked Out";
-						model.addRow(new Object[]{
-							book.getIsbn(), 
-							book.getTitle(), 
-							book.getAuthor(), 
-							book.getGenre(), 
-							book.getPublisher(), 
-							book.getYear(),
-							displayStatus
-						});
-					}
+				List<Book> results = bookManager.searchBooks(searchText);
+				for (Book book : results) {
+					String displayStatus = book.isAvailable() ? "Available" : "Checked Out";
+					model.addRow(new Object[]{
+						book.getIsbn(), 
+						book.getTitle(), 
+						book.getAuthor(), 
+						book.getGenre(), 
+						book.getPublisher(), 
+						book.getYear(),
+						displayStatus
+					});
 				}
 				
 				// Show search results count
@@ -586,65 +557,6 @@ public class ManageBooks extends JFrame {
 		refreshTable();
 	}
 	
-	// Add helper methods for OOP functionality
-	
-	/**
-	 * Add a book to the system
-	 */
-	public void addBook(Book book) {
-		DefaultTableModel model = (DefaultTableModel) table.getModel();
-		bookList.add(book);
-		String status = book.isAvailable() ? "Available" : "Checked Out";
-		model.addRow(new Object[]{
-			book.getIsbn(), 
-			book.getTitle(), 
-			book.getAuthor(), 
-			book.getGenre(), 
-			book.getPublisher(), 
-			book.getYear(),
-			status
-		});
-	}
-	
-	/**
-	 * Get book by index from the list
-	 */
-	public Book getBook(int index) {
-		if (index >= 0 && index < bookList.size()) {
-			return bookList.get(index);
-		}
-		return null;
-	}
-	
-	/**
-	 * Remove book by index
-	 */
-	public void removeBook(int index) {
-		if (index >= 0 && index < bookList.size()) {
-			bookList.remove(index);
-			DefaultTableModel model = (DefaultTableModel) table.getModel();
-			model.removeRow(index);
-		}
-	}
-	
-	/**
-	 * Update book at specified index
-	 */
-	public void updateBook(int index, Book updatedBook) {
-		if (index >= 0 && index < bookList.size()) {
-			bookList.set(index, updatedBook);
-			DefaultTableModel model = (DefaultTableModel) table.getModel();
-			model.setValueAt(updatedBook.getIsbn(), index, 0);
-			model.setValueAt(updatedBook.getTitle(), index, 1);
-			model.setValueAt(updatedBook.getAuthor(), index, 2);
-			model.setValueAt(updatedBook.getGenre(), index, 3);
-			model.setValueAt(updatedBook.getPublisher(), index, 4);
-			model.setValueAt(updatedBook.getYear(), index, 5);
-			String status = updatedBook.isAvailable() ? "Available" : "Checked Out";
-			model.setValueAt(status, index, 6);
-		}
-	}
-	
 	/**
 	 * Refresh the table to show all books
 	 */
@@ -653,7 +565,7 @@ public class ManageBooks extends JFrame {
 		model.setRowCount(0); // Clear table
 		
 		// Add all books from the list
-		for (Book book : bookList) {
+		for (Book book : bookManager.getBooks()) {
 			String status = book.isAvailable() ? "Available" : "Checked Out";
 			model.addRow(new Object[]{
 				book.getIsbn(), 
