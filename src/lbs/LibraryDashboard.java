@@ -158,6 +158,21 @@ public class LibraryDashboard extends JFrame {
 			}
 		});
 		
+		// Action listener for Logout button
+		btnLogout.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+				new LibraryLogin().setVisible(true);
+			}
+		});
+		
+		// Action listener for Exit button
+		btnExit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBounds(0, 0, 1271, 49);
 		panel_1.setBackground(new Color(79, 70, 229));
@@ -288,6 +303,12 @@ public class LibraryDashboard extends JFrame {
 		lblNewLabel_2.setFont(new Font("Segoe UI Symbol", Font.BOLD, 16));
 		lblNewLabel_2.setBounds(68, 11, 89, 22);
 		panel_2_1_1_1_1.add(lblNewLabel_2);
+		
+		JLabel lblTotalBooksCount = new JLabel(String.valueOf(ManageBooks.bookList.size()));
+		lblTotalBooksCount.setForeground(Color.WHITE);
+		lblTotalBooksCount.setFont(new Font("Segoe UI Symbol", Font.BOLD, 24));
+		lblTotalBooksCount.setBounds(98, 33, 77, 30);
+		panel_2_1_1_1_1.add(lblTotalBooksCount);
 		contentPane.revalidate();
 		contentPane.repaint();
 

@@ -168,13 +168,32 @@ public class LibraryLogin extends JFrame {
 		
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// simple show welcome on successful login
-				String user = textField.getText();
-				String pass = new String(textField_1.getPassword());
-				if ("admin".equals(user) && "password".equals(pass)) {
-					LibraryDashboard ld = new LibraryDashboard();
-					ld.setVisible(true);
+				// Get user input
+				String username = textField.getText().trim();
+				String password = new String(textField_1.getPassword());
+				
+				// Validate input
+				if (username.isEmpty() || password.isEmpty()) {
+					javax.swing.JOptionPane.showMessageDialog(LibraryLogin.this, 
+						"Please enter both username and password!", "Login Error", 
+						javax.swing.JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				
+				// Simple authentication - check hardcoded credentials
+				if ("admin".equals(username) && "password".equals(password)) {
+					// Login successful - open dashboard
+					LibraryDashboard dashboard = new LibraryDashboard();
+					dashboard.setVisible(true);
 					dispose();
+				} else {
+					// Login failed
+					javax.swing.JOptionPane.showMessageDialog(LibraryLogin.this, 
+						"Invalid username or password!", "Login Failed", 
+						javax.swing.JOptionPane.ERROR_MESSAGE);
+					
+					// Clear password field for security
+					textField_1.setText("");
 				}
 			}
 		});
