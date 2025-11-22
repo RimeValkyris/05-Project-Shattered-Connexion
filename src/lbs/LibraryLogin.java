@@ -33,6 +33,9 @@ public class LibraryLogin extends JFrame {
 	private JTextField textField;
 	private JPasswordField textField_1;
 	private JLabel lblNewLabel_1;
+	
+	// User object for authentication (OOP: Encapsulation and Abstraction)
+	private User adminUser;
 
 	/**
 	 * Launches the application.
@@ -54,6 +57,9 @@ public class LibraryLogin extends JFrame {
 	 * Create the frame.
 	 */
 	public LibraryLogin() {
+		// Initialize admin user using OOP encapsulation
+		adminUser = new User("admin", "password");
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 883, 487);
 		setResizable(false);
@@ -180,8 +186,8 @@ public class LibraryLogin extends JFrame {
 					return;
 				}
 				
-				// Simple authentication - check hardcoded credentials
-				if ("admin".equals(username) && "password".equals(password)) {
+				// Use OOP: Encapsulate authentication logic in User object
+				if (adminUser.validateCredentials(username, password)) {
 					// Login successful - open dashboard
 					LibraryDashboard dashboard = new LibraryDashboard();
 					dashboard.setVisible(true);

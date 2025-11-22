@@ -1,8 +1,6 @@
-package lbs;
 
-/**
- * User class represents a library system user with login credentials
- */
+
+package lbs;
 public class User {
     private String username;
     private String password;
@@ -45,9 +43,6 @@ public class User {
         isActive = active;
     }
 
-    /**
-     * Validate user credentials
-     */
     public boolean validateCredentials(String inputUsername, String inputPassword) {
         return this.username != null && this.username.equals(inputUsername) &&
                this.password != null && this.password.equals(inputPassword) &&
@@ -62,3 +57,4 @@ public class User {
                 '}';
     }
 }
+
